@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=http://json-schema.org/draft-07/schema
+$schema: http://json-schema.org/draft-07/schema
+title: CSF Yaml Schema
+description: A YAML Schema for CSF YAML files
+$ref: "#/definitions/root"
+definitions:
+  root:
+    type: object
+    description: All CSF labels are here.
+    minProperties: 1
+    maxProperties: 2147483647
+    patternProperties:
+      "^[\\x20-\\x7E]*$":
+        $ref: "#/definitions/csfValueRoot"
+  csfValueRoot:
+    oneOf:
+    - $ref: "#/definitions/simpleValue"
+    - $ref: "#/definitions/advancedValue"
+    - $ref: "#/definitions/valueArray"
+  valueArray:
+    type: array
+    description: Array of CSF Value.
+    items:
+      oneOf:
+      - $ref: "#/definitions/simpleValue"
+      - $ref: "#/definitions/advancedValue"
+  simpleValue:
+    oneOf:
+      - type: string
+        description: A simple CSF Value.
+      - type: "null"
+        description: This tag does not contain any csf values.
+  advancedValue:
+    type: object
+    description: A advanced CSF Value.
+    additionalProperties: false
+    properties:
+      value:
+        $ref: "#/definitions/simpleValue"
+      extra:
+        $ref: "#/definitions/extraString"
+    required:
+    - value
+  extraString:
+    type: string
+    pattern: "^[\\x20-\\x7E]*$"
+    description: extra string for csf value.

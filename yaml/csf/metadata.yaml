@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=http://json-schema.org/draft-07/schema
+$schema: http://json-schema.org/draft-07/schema
+title: CSF Yaml Metadata Schema
+description: A YAML Schema for CSF YAML Metadata files
+$ref: "#/definitions/root"
+definitions:
+  root:
+    type: object
+    description: CSF Metadata are here.
+    properties:
+      lang:
+        oneOf:
+          - type: integer
+            minimum: 0
+            maximum: 9
+          - type: string
+            enum:
+            - en_US
+            - en_UK
+            - de
+            - fr
+            - es
+            - it
+            - jp
+            - Jabberwockie
+            - kr
+            - zh
