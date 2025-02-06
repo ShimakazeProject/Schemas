@@ -3,47 +3,22 @@
   "$id": "https://schema.shimakaze.org/json/csf/v2.json",
   "title": "Shimakaze.Sdk.Csf.Json v2",
   "description": "适用于 Shimakaze.Sdk.CSF 的 Json 规范 第二版",
-  "type": "object",
-  "properties": {
-    "protocol": {
-      "$ref": "#/definitions/protocol"
-    },
-    "version": {
-      "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/version"
-    },
-    "language": {
-      "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/language"
-    },
-    "data": {
-      "$ref": "#/definitions/data"
-    }
-  },
-  "required": [
-    "protocol",
-    "data"
-  ],
+  "$ref": "#/definitions/root",
   "definitions": {
     "protocol": {
       "title": "使用的规范版本，此数值必须为 2",
       "const": 2
     },
     "simpleLabel": {
-      "title": "简单的 CSF 标签",
-      "oneOf": [
-        {
-          "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/value"
-        },
-        {
-          "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/valuePair"
-        }
-      ]
+      "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/valueObject",
+      "title": "简单的 CSF 标签"
     },
     "multiValueLabel": {
       "title": "拥有多个值的 CSF 标签",
       "type": "object",
       "properties": {
         "values": {
-          "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/values"
+          "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/valueCollection"
         }
       },
       "required": [
@@ -71,6 +46,28 @@
           "$ref": "#/definitions/label"
         }
       }
+    },
+    "root": {
+      "title": "CSF 文件",
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "$ref": "#/definitions/protocol"
+        },
+        "version": {
+          "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/version"
+        },
+        "language": {
+          "$ref": "https://schema.shimakaze.org/json/csf/v1.json#/definitions/language"
+        },
+        "data": {
+          "$ref": "#/definitions/data"
+        }
+      },
+      "required": [
+        "protocol",
+        "data"
+      ]
     }
   }
 }
