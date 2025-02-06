@@ -1,47 +1,66 @@
 # yaml-language-server: $schema=http://json-schema.org/draft-07/schema
 $schema: http://json-schema.org/draft-07/schema
-title: CSF Yaml Schema
-description: A YAML Schema for CSF YAML files
-$ref: "#/definitions/root"
+$id: https://schema.shimakaze.org/yaml/csf/v1.yaml
+title: Shimakaze.Sdk.Csf.Yaml v1
+description: 适用于 Shimakaze.Sdk.CSF 的 Yaml 规范 第一版
+$ref: "#/definitions/data"
 definitions:
-  root:
-    type: object
-    description: All CSF labels are here.
-    minProperties: 1
-    maxProperties: 2147483647
-    patternProperties:
-      "^[\\x20-\\x7E]*$":
-        $ref: "#/definitions/csfValueRoot"
-  csfValueRoot:
-    oneOf:
-    - $ref: "#/definitions/simpleValue"
-    - $ref: "#/definitions/advancedValue"
-    - $ref: "#/definitions/valueArray"
-  valueArray:
-    type: array
-    description: Array of CSF Value.
-    items:
-      oneOf:
-      - $ref: "#/definitions/simpleValue"
-      - $ref: "#/definitions/advancedValue"
-  simpleValue:
+  head:
+    title: CSF 文件的元数据
+    type: "object"
+    properties:
+      version:
+        $ref: "https://schema.shimakaze.org/json/csf/v1.json#/definitions/version"
+      lang:
+        $ref: "https://schema.shimakaze.org/json/csf/v1.json#/definitions/language"
+  value:
+    title: CSF 标签值字符串
     oneOf:
       - type: string
         description: A simple CSF Value.
       - type: "null"
         description: This tag does not contain any csf values.
-  advancedValue:
+  valuePair:
+    title: CSF 标签值字符串对
     type: object
-    description: A advanced CSF Value.
-    additionalProperties: false
     properties:
       value:
-        $ref: "#/definitions/simpleValue"
+        $ref: "#/definitions/value"
       extra:
-        $ref: "#/definitions/extraString"
+        $ref: "https://schema.shimakaze.org/json/csf/v1.json#/definitions/extra"
     required:
-    - value
-  extraString:
-    type: string
-    pattern: "^[\\x20-\\x7E]*$"
-    description: extra string for csf value.
+      - value
+  valueObject:
+    title: CSF 标签值
+    oneOf:
+      - $ref: "#/definitions/value"
+      - $ref: "#/definitions/valuePair"
+  valueCollection:
+    title: CSF 标签值集合
+    type: array
+    items:
+      $ref: "#/definitions/valueObject"
+  simpleLabel:
+    $ref: "#/definitions/valueObject"
+    title: 简单的 CSF 标签
+  multiValueLabel:
+    title: 拥有多个值的 CSF 标签
+    type: object
+    properties:
+      values:
+        $ref: "#/definitions/valueCollection"
+    required:
+      - values
+  label:
+    title: CSF 标签
+    oneOf:
+      - $ref: "#/definitions/simpleLabel"
+      - $ref: "#/definitions/multiValueLabel"
+  data:
+    title: CSF 文件的主体数据
+    type: object
+    minProperties: 1
+    maxProperties: 2147483647
+    patternProperties:
+      "^[\\x20-\\x7E]*$":
+        $ref: "#/definitions/label"
