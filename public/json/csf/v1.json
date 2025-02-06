@@ -1,139 +1,193 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "CSF Json schema",
-    "type": "object",
-    "properties": {
-        "protocol": {
-            "type": "integer",
-            "minimum": 1
-        },
-        "head": {
-            "type": "object",
-            "description": "文件头",
-            "properties": {
-                "version": {
-                    "type": "integer",
-                    "minimum": 2,
-                    "maximum": 3
-                },
-                "language": {
-                    "oneOf": [
-                        {
-                            "type": "integer",
-                            "minimum": 0,
-                            "maximum": 9
-                        },
-                        {
-                            "type": "string",
-                            "enum": [
-                                "en_US",
-                                "en_UK",
-                                "de",
-                                "fr",
-                                "es",
-                                "it",
-                                "jp",
-                                "Jabberwockie",
-                                "kr",
-                                "zh"
-                            ]
-                        }
-                    ]
-                }
-            },
-            "required": [
-                "version"
-            ]
-        },
-        "data": {
-            "type": "array",
-            "description": "文件主体",
-            "minItems": 1,
-            "maxItems": 2147483647,
-            "items": {
-                "type": "object",
-                "properties": {
-                    "label": {
-                        "type": "string",
-                        "pattern": "^[\\x20-\\x7E]*$"
-                    },
-                    "value": {
-                        "oneOf": [
-                            {
-                                "type": "string",
-                                "pattern": "^((?!\\r).)*$"
-                            },
-                            {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "pattern": "^((?!\\r).)*$"
-                                }
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    },
-                    "values": {
-                        "type": "array",
-                        "items": {
-                            "oneOf": [
-                                {
-                                    "type": "string",
-                                    "pattern": "^((?!\\r).)*$"
-                                },
-                                {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string",
-                                        "pattern": "^((?!\\r).)*$"
-                                    }
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "value": {
-                                            "oneOf": [
-                                                {
-                                                    "type": "string",
-                                                    "pattern": "^((?!\\r).)*$"
-                                                },
-                                                {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "pattern": "^((?!\\r).)*$"
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        "extra": {
-                                            "type": "string",
-                                            "pattern": "^[\\x20-\\x7E]*$"
-                                        }
-                                    },
-                                    "required": [
-                                        "value"
-                                    ]
-                                }
-                            ]
-                        }
-                    },
-                    "extra": {
-                        "type": "string",
-                        "pattern": "^\\w*$"
-                    }
-                },
-                "required": [
-                    "label"
-                ]
-            }
-        }
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://schema.shimakaze.org/json/csf/v1.json",
+  "title": "Shimakaze.Sdk.Csf.Json v1",
+  "description": "适用于 Shimakaze.Sdk.CSF 的 Json 规范 第一版",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "$ref": "#/definitions/protocol"
     },
-    "required": [
-        "protocol",
-        "head",
-        "data"
-    ]
+    "head": {
+      "$ref": "#/definitions/head"
+    },
+    "data": {
+      "$ref": "#/definitions/data"
+    }
+  },
+  "required": [
+    "protocol",
+    "head",
+    "data"
+  ],
+  "definitions": {
+    "protocol": {
+      "title": "使用的规范版本，此数值必须为 1",
+      "const": 1
+    },
+    "version": {
+      "title": "CSF 文件的版本",
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 3
+    },
+    "language": {
+      "title": "CSF 文件使用的语言",
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string",
+          "enum": [
+            "en_US",
+            "en_UK",
+            "de",
+            "fr",
+            "es",
+            "it",
+            "jp",
+            "Jabberwockie",
+            "kr",
+            "zh"
+          ]
+        }
+      ]
+    },
+    "head": {
+      "title": "CSF 文件的元数据",
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/version"
+        },
+        "language": {
+          "$ref": "#/definitions/language"
+        }
+      },
+      "required": [
+        "version"
+      ]
+    },
+    "labelName": {
+      "title": "CSF 标签名",
+      "type": "string",
+      "pattern": "^[\\x20-\\x7E]*$"
+    },
+    "singleLineString": {
+      "description": "单行字符串",
+      "type": "string",
+      "pattern": "^((?!\\r).)*$"
+    },
+    "multiLineString": {
+      "description": "多行字符串",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/singleLineString"
+      }
+    },
+    "value": {
+      "title": "CSF 标签值字符串",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/singleLineString"
+        },
+        {
+          "$ref": "#/definitions/multiLineString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "extra": {
+      "title": "CSF 标签的额外值字符串",
+      "type": "string",
+      "pattern": "^\\w*$"
+    },
+    "simpleLabel": {
+      "title": "简单的 CSF 标签",
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/definitions/labelName"
+        },
+        "value": {
+          "$ref": "#/definitions/value"
+        },
+        "extra": {
+          "$ref": "#/definitions/extra"
+        }
+      },
+      "required": [
+        "label",
+        "value"
+      ]
+    },
+    "valuePair": {
+      "title": "CSF 标签值字符串对",
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/definitions/value"
+        },
+        "extra": {
+          "$ref": "#/definitions/extra"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "values": {
+      "title": "CSF 标签值字符串集合",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/value"
+          },
+          {
+            "$ref": "#/definitions/valuePair"
+          }
+        ]
+      }
+    },
+    "multiValueLabel": {
+      "title": "拥有多个值的 CSF 标签",
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/definitions/labelName"
+        },
+        "values": {
+          "$ref": "#/definitions/values"
+        }
+      },
+      "required": [
+        "label",
+        "values"
+      ]
+    },
+    "label": {
+      "title": "CSF 标签",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/simpleLabel"
+        },
+        {
+          "$ref": "#/definitions/multiValueLabel"
+        }
+      ]
+    },
+    "data": {
+      "title": "CSF 文件的主体数据",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2147483647,
+      "items": {
+        "$ref": "#/definitions/label"
+      }
+    }
+  }
 }
