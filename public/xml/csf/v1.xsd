@@ -64,7 +64,7 @@
       <xsd:documentation>CSF 标签值字符串集合</xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="Value" type="value" maxOccurs="unbounded" />
+      <xsd:element name="Value" type="value" maxOccurs="unbounded" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
