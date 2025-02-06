@@ -1,83 +1,101 @@
 <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
+  <xsd:annotation>
+    <xsd:documentation> 适用于 Shimakaze.Sdk.CSF 的 Xml 规范 第一版 </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:simpleType name="protocol">
+    <xsd:annotation>
+      <xsd:documentation>使用的规范版本，此数值必须为 1</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:integer">
+      <xsd:enumeration value="1" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
   <xsd:simpleType name="version">
+    <xsd:annotation>
+      <xsd:documentation>CSF 文件的版本</xsd:documentation>
+    </xsd:annotation>
     <xsd:restriction base="xsd:integer">
       <xsd:minInclusive value="2" />
       <xsd:maxInclusive value="3" />
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:simpleType name="protocol">
-    <xsd:restriction base="xsd:integer">
-      <xsd:minInclusive value="1" />
-      <xsd:maxInclusive value="1" />
-    </xsd:restriction>
+  <xsd:simpleType name="language">
+    <xsd:annotation>
+      <xsd:documentation>CSF 文件使用的语言</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:integer" />
   </xsd:simpleType>
 
-  <xsd:simpleType name="d_language">
-    <xsd:restriction base="xsd:integer">
-      <xsd:minInclusive value="-1" />
-      <xsd:maxInclusive value="9" />
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="sz_language">
+  <xsd:simpleType name="labelName">
+    <xsd:annotation>
+      <xsd:documentation>CSF 标签名</xsd:documentation>
+    </xsd:annotation>
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="en_US" />
-      <xsd:enumeration value="en_UK" />
-      <xsd:enumeration value="de" />
-      <xsd:enumeration value="fr" />
-      <xsd:enumeration value="es" />
-      <xsd:enumeration value="it" />
-      <xsd:enumeration value="jp" />
-      <xsd:enumeration value="Jabberwockie" />
-      <xsd:enumeration value="kr" />
-      <xsd:enumeration value="zh" />
+      <xsd:pattern value="[&#x20;-&#x7E;]*" />
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:element name="value">
-    <xsd:complexType>
-      <xsd:simpleContent>
-        <xsd:extension base="xsd:string">
-          <xsd:attribute name="extra" type="xsd:string" />
-        </xsd:extension>
-      </xsd:simpleContent>
-    </xsd:complexType>
-  </xsd:element>
+  <xsd:simpleType name="extra">
+    <xsd:annotation>
+      <xsd:documentation>CSF 标签的额外值字符串</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[&#x20;-&#x7E;]*" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="value">
+    <xsd:annotation>
+      <xsd:documentation>CSF 标签值字符串</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="extra" type="extra" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="valueCollection">
+    <xsd:annotation>
+      <xsd:documentation>CSF 标签值字符串集合</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Value" type="value" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
 
   <xsd:complexType name="label" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation>CSF 标签</xsd:documentation>
+    </xsd:annotation>
     <xsd:choice minOccurs="0">
-      <xsd:element ref="value" />
-
-      <xsd:element name="values">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element maxOccurs="unbounded" ref="value" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
+      <xsd:element name="Value" type="value" />
+      <xsd:element name="Values" type="valueCollection"/>
     </xsd:choice>
-
-    <xsd:attribute name="extra" type="xsd:string" use="optional" />
-    <xsd:attribute name="name" type="xsd:Name" use="required" />
+    <xsd:attribute name="extra" type="extra" use="optional" />
+    <xsd:attribute name="name" type="labelName" use="required" />
   </xsd:complexType>
 
   <xsd:element name="Resources">
+    <xsd:annotation>
+      <xsd:documentation>CSF 文件</xsd:documentation>
+    </xsd:annotation>
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Label" type="label" maxOccurs="unbounded" />
       </xsd:sequence>
       <xsd:attribute name="protocol" type="protocol" use="required" />
       <xsd:attribute name="version" type="version" use="required" />
-      <xsd:attribute name="language" type="d_language" />
+      <xsd:attribute name="language" type="language" />
     </xsd:complexType>
-
     <xsd:unique name="UniqueLabelName">
       <xsd:selector xpath="Label" />
       <xsd:field xpath="name" />
     </xsd:unique>
-
   </xsd:element>
-  
+
 </xsd:schema>
